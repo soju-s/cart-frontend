@@ -1,0 +1,203 @@
+<!-- without items -->
+
+<div *ngIf="allCart.length==0"
+    style="width: 100%; height: 90vh; display: flex; justify-content: center; align-items: center;"
+    class="container text-center ">
+    <div>
+        <div>
+            <img width="200px" src="https://cdn-icons-png.flaticon.com/512/2762/2762885.png" alt="cart image">
+        </div>
+        <h1 class="mt-4">
+            Your Cart is <span class="text-danger">Empty</span>
+        </h1>
+        <h4 class="mt-4">Looks like you have not added anything to your Cart.Go ahead and explore more </h4>
+        <button routerLink="" class="btn btn-primary mt-3">Shop Now</button>
+    </div>
+</div>
+
+<!-- with item -->
+
+<div style="width: 100%; height: 88vh; display: flex; justify-content: center; align-items: center;"
+    *ngIf="allCart.length!=0" class="container">
+    <div class="row">
+        <!-- heading -->
+        <h2 class="text-danger text-decoration-underline ms-5 mb-5">Cart Summary</h2>
+        <!-- table -->
+        <div class="col-md-6 border p-2 rounded">
+            <table style="vertical-align: middle;" class="table text-center">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Name</th>
+                        <th>Image</th>
+                        <th>Quality</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of allCart; let i=index;">
+                        <th>{{i+1}} </th>
+                        <th>{{item.title.slice(0,35)}}...</th>
+                        <th><img width="60px" height="60px" [src]="item.image" alt="shirt"></th>
+                        <th>
+                            <div class="d-flex">
+                                <!-- decrement value -->
+                                <button (click)="decrementPrice(item.id)" class="btn fw-bolder"> - </button>
+                                <input readonly value="{{item.quantity}}" class="form-control text-center "
+                                    style="max-width: 3rem; " type="num">
+                                <!-- increment value -->
+                                <button (click)="incrementPrice(item.id)" class="btn fw-bolder"> + </button>
+                            </div>
+                        </th>
+                        <th>{{item.grandTotal}}</th>
+                        <th (click)="deleteCart(item.id)"><i class="fa-solid fa-trash text-danger icon"></i></th>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- buttons -->
+
+            <div class="d-flex justify-content-end">
+                <!-- empty cart -->
+                <button (click)="deleteAllCart()" class="btn btn-primary">Empty Cart</button>
+                <!-- shop more -->
+                <a class="btn btn-success ms-3" routerLink="">Shop More</a>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+        <!-- summary -->
+        <div class="col-md-4 border p-3 text-center">
+            <h3 class="text-success">Price: $ {{totalPrice}} </h3>
+
+            <hr>
+            <!-- checkout button -->
+            <div class="d-grid">
+
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Check
+                    Out</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 text-primary" id="staticBackdropLabel">Check Out Details</h1>
+                <button (click)="modelClose()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6 *ngIf="makePayment" class="text-success">Payment Details</h6>
+                <h6 *ngIf="!makePayment" class="text-success">Enter Your Delievery Address</h6>
+                <form *ngIf="!makePayment" [formGroup]="addressForm" (ngSubmit)="addressFormSubmit()"
+                    class="border rounded p-3 mt-3">
+
+                    <input name="username" formControlName="username" class="form-control  mt-3" placeholder="Username"
+                        type="text" required>
+                    <div *ngIf="addressForm.get('username')?.errors&&addressForm.get('username')?.touched"
+                        class="text-danger mt-2">Invalid Username</div>
+
+                    <input name="flat" formControlName="flat" class="form-control mt-3" placeholder="Apartment/Flat No"
+                        type="text" required>
+                    <div *ngIf="addressForm.get('flat')?.errors&&addressForm.get('flat')?.touched"
+                        class="text-danger mt-2">Invalid Flat No</div>
+
+                    <input name="street" formControlName="street" class="form-control  mt-3" placeholder="Street Name"
+                        type="text" required>
+                    <div *ngIf="addressForm.get('street')?.errors&&addressForm.get('street')?.touched"
+                        class="text-danger mt-2">Invalid Street</div>
+
+                    <input name="state" formControlName="state" class="form-control  mt-3" placeholder="State"
+                        type="text" required>
+                    <div *ngIf="addressForm.get('state')?.errors&&addressForm.get('state')?.touched"
+                        class="text-danger mt-2">Invalid State</div>
+
+                    <!-- button -->
+                    <button class="btn btn-primary mt-3">Proceed to Payment</button>
+
+                </form>
+
+                <!-- make payment div -->
+                <div class="mt-3 border rounded p-2" *ngIf="makePayment">
+
+                    <h6>Delivery Address: </h6>
+                    <p>{{username}} </p>
+                    <p>{{flat}},{{street}} </p>
+                    <p>{{state}} </p>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between">
+
+                <h6 class="ms-3">Total Amount : <span class="text-danger fw-bolder fs-4">${{totalPrice}} </span></h6>
+                <button *ngIf="!offerButtonHide" (click)="offerButtonClicked()" class="btn text-primary"><i
+                        class="fa-solid fa-tag fa-fade"></i> Offers</button>
+            </div>
+
+            <!-- offer showing div -->
+
+            <div *ngIf="offerButtonHide" class="d-flex justify-content-evenly ">
+
+               <div *ngIf="!discountImageClicked">
+                    <!-- discount of 10% -->
+                    <div *ngIf="totalPrice<500">
+                        <img (click)="tenPercentClicked()" width="180px" height="120px"
+                            src="https://img.freepik.com/premium-vector/coupon-mockup-with-10-percent-off-discount-voucher-gift-coupon-coupon-promotion-sale-vector_662353-251.jpg?w=2000"
+                            alt="image">
+                    </div>
+               </div>
+
+              <div *ngIf="!discountImageClicked">
+                    <!-- discount of 50% -->
+                    <div *ngIf="totalPrice>500">
+                        <img (click)="fiftyPercentClicked()" width="180px" height="100px"
+                            src="https://www.shutterstock.com/image-vector/50-coupon-promotion-sale-website-260nw-2039676860.jpg"
+                            alt="image">
+                    </div>
+              </div>
+
+            </div>
+
+            <!-- payment success -->
+
+            <div *ngIf="showSuccess">
+
+                <p class="text-success fs-3">Transaction has been completed successfully. Your order has been confirmed</p>
+            </div>
+
+            <!-- payment cancel -->
+
+            <div *ngIf="showCancel">
+
+                <p class="text-warning fs-3">Your Transaction has been cancelled </p>
+
+            </div>
+
+            <!-- payment  error-->
+
+            <div *ngIf="showError ">
+
+                <p class="text-danger fs-3">Your Transaction has been failed</p>
+
+            </div>
+
+            <!-- payment button -->
+            <div *ngIf="makePayment" class="d-flex justify-content-center m-5">
+
+                <button *ngIf="!showPaypal" (click)="makePaymentClicked()" class="btn btn-success">Make Payment</button>
+
+            </div>
+            <!-- paypal gateway div -->
+            <div *ngIf="showPaypal">
+                <ngx-paypal [config]="payPalConfig"></ngx-paypal>
+            </div>
+
+            
+           
+        </div>
+    </div>
+</div>

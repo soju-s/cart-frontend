@@ -1,0 +1,52 @@
+<!-- without items -->
+
+<div *ngIf="addedItems.length==0" style="width: 100%; height: 90vh; display: flex; justify-content: center; align-items: center;" class="container text-center ">
+    <div >
+        <div >
+            <img  width="200px" src="https://cdn-icons-png.flaticon.com/512/2762/2762885.png" alt="cart image">
+        </div>
+        <h1 class="mt-4">
+            Your Wishlist is <span class="text-danger">Empty</span>
+        </h1>
+        <h4 class="mt-4">Looks like you have not added anything to your wishlist.Go ahead and explore more </h4>
+        <button routerLink="" class="btn btn-primary mt-3">Shop Now</button>
+    </div>
+</div>
+
+<!-- with items -->
+<section  *ngIf="addedItems.length!=0" class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            <div *ngFor="let item of addedItems" class="col mb-5">
+                <div class="card h-100 p-2">
+                    <!-- Product image-->
+                    <img id="img" height="300px" class="card-img-top " [src]="item.image" alt="product image" />
+                    <!-- Product details-->
+                    <div class="card-body p-4">
+                        <div class="text-center">
+                            <!-- Product name-->
+                            <h5 class="fw-bolder">{{item.title.slice(0,30)}}...</h5>
+                            <!-- Product price-->
+                            ${{item.price}}
+                        </div>
+                    </div>
+                    <!-- Product actions-->
+                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                        <div class="text-center d-flex justify-content-evenly">
+                            <!-- view option -->
+                            <button (click)="deleteWishlist(item.id)" class="btn btn-danger mt-auto" >
+                                <i class="fa-solid fa-heart-circle-xmark"></i>
+                            </button>
+                            <!-- add to cart -->
+                            <button (click)="addToCart(item)" class="btn btn-success">
+                                <i class="fa-solid fa-cart-plus text-light"></i>
+
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+        </div>
+    </div>
+</section>

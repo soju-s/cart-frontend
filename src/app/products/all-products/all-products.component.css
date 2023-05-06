@@ -1,0 +1,14 @@
+.banner{
+    background-image: url(https://www.webworldtechnologies.in/images/shopping-cart-solutions-bottom-banner.jpg);
+  background-attachment: fixed;
+   
+
+}
+.card{
+    transition: 2s;
+}
+.card:hover img{
+    transform: scale(1.05);
+    transition: 2s;
+    
+}
